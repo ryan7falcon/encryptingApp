@@ -9,23 +9,26 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
 
 
 public class MessageListActivity extends SwipeListViewActivity {
 
+    /*
     private ListView mainListView ;
     private ArrayAdapter<String> listAdapter;
+    */
 
     private ListView mListView;
     private ArrayAdapter<String> mAdapter;
+    MessageList ml = HomeActivity.ml;
+    private static final int CHAR_LIMIT = 28;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
+        /*
         // Finds the ListView resource.
         mainListView = (ListView) findViewById( R.id.mainListView );
 
@@ -47,11 +50,33 @@ public class MessageListActivity extends SwipeListViewActivity {
 
         // Set the ArrayAdapter as the ListView's adapter.
         mainListView.setAdapter( listAdapter );
+        */
 
+        // Finds the ListView resource.
         mListView = (ListView) findViewById(R.id.mainListView );
+
+        ArrayList<String> listOfText = ml.getListOfMessages(); //the list of all messages' texts
+        ArrayList<String> trimmedList = new ArrayList<>(); //reformatted list
+        //ArrayList<String> listOfNames = ml.getLIstOfNames(); //for debugging
+
+        for (int i = 0; i < listOfText.size(); i++){
+
+            String text = listOfText.get(i);
+
+            //remove all newline characters
+            text = text.replace("\n", "").replace("\r", "");
+
+            //trim the string if its too long
+            if (listOfText.get(i).length() > CHAR_LIMIT) {
+                trimmedList.add(i+1 + ": " + text.substring(0, CHAR_LIMIT) + "...");
+            }
+            else
+                trimmedList.add(i+1 + ": " + text);
+        }
+
         mAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, new String[] { "Item 1",
-                "Item 2", "Item 2", "Item 3", "Item 4", "Item 5" });
+                R.layout.simple_row, trimmedList);
+
         mListView.setAdapter(mAdapter);
     }
 

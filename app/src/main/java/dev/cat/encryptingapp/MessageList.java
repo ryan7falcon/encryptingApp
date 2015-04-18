@@ -15,7 +15,6 @@ import java.util.Date;
  */
 public class MessageList {
 
-    private Date date;
     protected Context context; //application context
     private ArrayList<Message> _list; // a list of messages
     private static final String FNAME = "message"; //prefix for filenames
@@ -29,13 +28,13 @@ public class MessageList {
     public MessageList(Context context){
         _list = new ArrayList<>();
         this.context = context;
-        date = new Date();
     }
 
     /**
      * creates new blank message
      */
     public void newMessage(){
+        Date date = new Date();
         Message m = new Message();
         m.setPath(FNAME + (date.getTime())); //unique name for a message file based on current time
         m.setText("");
@@ -200,6 +199,25 @@ public class MessageList {
 
     public String getLabel(){
         return "Message " + (_list.indexOf(cm) + 1) + "/" + _list.size();
+    }
+
+    public ArrayList<String> getListOfMessages(){
+
+        ArrayList<String> l = new ArrayList<>();
+        for (Message msg : _list) {
+            l.add(msg.getText());
+        }
+        return l;
+    }
+
+
+    public ArrayList<String> getLIstOfNames(){
+
+        ArrayList<String> l = new ArrayList<>();
+        for (Message msg : _list) {
+            l.add(msg.getPath());
+        }
+        return l;
     }
 //----------------------Navigation between messages---------------------------------------
     /**

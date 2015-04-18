@@ -27,7 +27,8 @@ public class HomeActivity extends Activity {
     private Button encryptBtn;
     private Button decryptBtn;
 
-    private MessageList ml;
+    //static and package visibility to make it accessible from MessageListActivity
+    static MessageList ml;
 
     private static final String FIRST_MESSAGE = "This is your first message. Enter any key and press 'Encrypt' button.";
 
