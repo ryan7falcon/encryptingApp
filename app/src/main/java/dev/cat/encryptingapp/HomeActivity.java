@@ -10,10 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class HomeActivity extends Activity {
 
     //field variables
+    private TextView label;
     private EditText msgField;
     private EditText keyField;
     private Button listBtn;
@@ -36,6 +38,7 @@ public class HomeActivity extends Activity {
 
         ml = new MessageList(getApplicationContext());
 
+        label = (TextView) findViewById(R.id.msgLabel);
         msgField = (EditText) findViewById(R.id.msgField);
         keyField = (EditText) findViewById(R.id.keyField);
         listBtn = (Button) findViewById(R.id.listBtn);
@@ -101,7 +104,7 @@ public class HomeActivity extends Activity {
             ml.newMessage();
             ml.setText(FIRST_MESSAGE);
         }
-        updateField(ml.getText());
+        updateView(ml.getText());
     }
 
     private void onNext() {
@@ -112,7 +115,7 @@ public class HomeActivity extends Activity {
             dlg.setMessage("This is a last message in the list. Go to the first one?");
             dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which){
-                            ml.goToFirst();  updateField(ml.getText());}
+                            ml.goToFirst();  updateView(ml.getText());}
                     }
             );
             dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
@@ -121,7 +124,8 @@ public class HomeActivity extends Activity {
         else{
             ml.goToNext();
         }
-        updateField(ml.getText());
+        updateView(ml.getText());
+
     }
 
     private void onPrevious(){
@@ -132,7 +136,7 @@ public class HomeActivity extends Activity {
             dlg.setMessage("This is a first message in the list. Go to the last one?");
             dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which){
-                           ml.goToLast();  updateField(ml.getText());}
+                           ml.goToLast();  updateView(ml.getText());}
                     }
             );
             dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
@@ -141,7 +145,7 @@ public class HomeActivity extends Activity {
         else{
             ml.goToPrevious();
         }
-        updateField(ml.getText());
+        updateView(ml.getText());
     }
 
     private void onSave() {
@@ -158,14 +162,14 @@ public class HomeActivity extends Activity {
 
        onSave();
         ml.encrypt(keyField.getText().toString());
-       updateField(ml.getText());
+       updateView(ml.getText());
        onSave();
     }
 
     private void onDecrypt() {
         onSave();
         ml.decrypt(keyField.getText().toString());
-        updateField(ml.getText());
+        updateView(ml.getText());
         onSave();
     }
 
@@ -173,18 +177,30 @@ public class HomeActivity extends Activity {
     private void onNew(){
         onSave();
         ml.newMessage();
-        updateField(ml.getText());
+        updateView(ml.getText());
     }
 
     private void onDelete(){
-        ml.delete();
-        updateField(ml.getText());
+        AlertDialog dlg = new AlertDialog.Builder(this).create();
+        dlg.setTitle("Delete");
+        dlg.setMessage("Are you sure you want to delete this message?");
+        dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int which){
+                        ml.delete();  updateView(ml.getText());}
+                }
+        );
+        dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
+        dlg.show(); // Does not wait for dialog!
     }
 
-    private void updateField(String s){
+    private void updateView(String s){
         msgField.setText(s);
+        updateLabel();
     }
 
+    private void updateLabel(){
+        label.setText(ml.getLabel());
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

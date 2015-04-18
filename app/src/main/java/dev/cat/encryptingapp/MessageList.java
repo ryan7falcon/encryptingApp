@@ -9,11 +9,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
 /**
  * Created by Ryan on 4/17/2015.
  */
 public class MessageList {
 
+    private Date date;
     protected Context context; //application context
     private ArrayList<Message> _list; // a list of messages
     private static final String FNAME = "message"; //prefix for filenames
@@ -27,6 +29,7 @@ public class MessageList {
     public MessageList(Context context){
         _list = new ArrayList<>();
         this.context = context;
+        date = new Date();
     }
 
     /**
@@ -34,7 +37,7 @@ public class MessageList {
      */
     public void newMessage(){
         Message m = new Message();
-        m.setPath(FNAME + (_list.size() + 1));
+        m.setPath(FNAME + (date.getTime())); //unique name for a message file based on current time
         m.setText("");
         _list.add(m);
         cm = m;
@@ -193,6 +196,10 @@ public class MessageList {
         }
         cm = _list.get(index);
         updateList();
+    }
+
+    public String getLabel(){
+        return "Message " + (_list.indexOf(cm) + 1) + "/" + _list.size();
     }
 //----------------------Navigation between messages---------------------------------------
     /**
