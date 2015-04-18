@@ -19,10 +19,12 @@ public class MessageList {
     private ArrayList<Message> _list; // a list of messages
     private static final String FNAME = "message"; //prefix for filenames
     private static final String LIST_FILE_NAME = "list.txt"; //file for storing filenames
-    private Message cm;
+    private static final int START_ASCII = 32; // ASCII keycode starting with space
+    private static final int FIMISH_ASCII = 126; // ASCII keycode ending with ~ which will be tne range for keyboard characters, numbers, and letters.
+    private Message cm; // current message
 
     /**
-     * constructor
+     * constructor which sets and creates a new ArrayList of messages and sets the application context
      * @param context Application context - needed for fileIO
      */
     public MessageList(Context context){
@@ -34,12 +36,12 @@ public class MessageList {
      * creates new blank message
      */
     public void newMessage(){
-        Date date = new Date();
-        Message m = new Message();
+        Date date = new Date(); // Creates a date object which has the date inside the object.
+        Message m = new Message(); // Creates a message object to store the new object
         m.setPath(FNAME + (date.getTime())); //unique name for a message file based on current time
         m.setText("");
-        _list.add(m);
-        cm = m;
+        _list.add(m); // adds the message to the array list
+        cm = m; //
         //add filename to the list.txt of files
         updateList();
     }
@@ -51,7 +53,7 @@ public class MessageList {
 
         //writes all message's paths to the list.txt file
 
-        OutputStreamWriter writer;
+        OutputStreamWriter writer; // Data written to the target input stream is converted into bytes by either a default or a provided character converter.
         try {
             writer = new OutputStreamWriter(context.openFileOutput(LIST_FILE_NAME, Context.MODE_PRIVATE));
 
@@ -60,7 +62,7 @@ public class MessageList {
                 writer.write(string + ",");
             }
 
-            writer.close();
+            writer.close(); // Closes the writer
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -273,13 +275,13 @@ public class MessageList {
         String result = "";
         for (int i = 1; i <= s.length(); i++){
             char c = s.charAt(i - 1);
-            if ((c >= 'A' && c <='z')){
+            if ((c >= START_ASCII && c <=FIMISH_ASCII )){
                 int remainder = i % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
-                int keyChar = key.charAt(index) - 'A';
-                int sum = c -'A' + keyChar;
-                int sumNorm = sum % ('z'+ 1 -'A');
-                char e = (char)(sumNorm + 'A');
+                int keyChar = key.charAt(index) - START_ASCII;
+                int sum = c -START_ASCII + keyChar;
+                int sumNorm = sum % (FIMISH_ASCII + 1 -START_ASCII);
+                char e = (char)(sumNorm + START_ASCII);
                 result+=e;
             }
             else
@@ -288,17 +290,18 @@ public class MessageList {
         cm.setText(result);
     }
 
+    // Decrypt method which will decrypt the message by first
     public void decrypt( String key){
         String s = cm.getText();
         String result = "";
         for (int i = 1; i <= s.length(); i++){
             char c = s.charAt(i - 1);
-            if ((c >= 'A' && c <='z')){
+            if ((c >= START_ASCII && c <=FIMISH_ASCII)){
                 int remainder = i % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
-                int keyChar = key.charAt(index) - 'A';
-                int sum = c -'A' - keyChar;
-                int sumResult = (sum >= 0) ? sum +'A': sum + 'z' + 1;
+                int keyChar = key.charAt(index) - START_ASCII;
+                int sum = c -START_ASCII - keyChar;
+                int sumResult = (sum >= 0) ? sum + START_ASCII: sum + FIMISH_ASCII + 1;
                 char e = (char)(sumResult);
                 result+=e;
             }

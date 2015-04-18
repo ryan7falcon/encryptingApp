@@ -52,6 +52,8 @@ public class HomeActivity extends Activity {
         decryptBtn = (Button) findViewById(R.id.decryptBtn);
 
 
+
+
         newBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onNew();
