@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">EncryptingApp</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="msgLabel">Your message:</string>
+    <string name="keyLabel">Encrypting key:</string>
+    <string name="title_message_list_activity">Message list</string>
+</resources>
