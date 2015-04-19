@@ -3,7 +3,9 @@ package dev.cat.encryptingapp;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -18,39 +20,33 @@ public class MessageListActivity extends SwipeListViewActivity {
     private ArrayAdapter<String> listAdapter;
     */
 
-    private ListView mListView;
-    private ArrayAdapter<String> mAdapter;
+    private ListView mListView; // A view that shows items in a vertically scrolling list.
+    private ArrayAdapter<String> mAdapter; // A concrete BaseAdapter(An Adapter object acts as a bridge between an AdapterView and the underlying data for that view.) that is backed by an array of arbitrary objects.
     MessageList ml = HomeActivity.ml;
-    private static final int CHAR_LIMIT = 28;
+    private static final int CHAR_LIMIT = 28; // Character limit is 28
+    private Button newBtn; // used to create new
+
+
+
+
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-        /*
-        // Finds the ListView resource.
-        mainListView = (ListView) findViewById( R.id.mainListView );
+        newBtn  = (Button) findViewById(R.id.newBtn);
 
-        // Makes a list to put it in message
-        String[] animals = new String[] { "Cat", "Dog", "Bird", "Reptile",
-                "Weasel", "Squirrel", "Whale", "Seagul"};
-        ArrayList<String> animalList = new ArrayList<String>();
-        animalList.addAll( Arrays.asList(animals) );
+        newBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onNew();
+            }
+        });
 
-        // Create ArrayAdapter A concrete BaseAdapter that is backed by an array of arbitrary objects
-        listAdapter = new ArrayAdapter<String>(this, R.layout.simple_row, animalList);
 
-        // Add more animals.
-        listAdapter.add( "Chicken" );
-        listAdapter.add( "Rooster" );
-        listAdapter.add( "Ferret" );
-        listAdapter.add( "Parrot" );
-        listAdapter.add( "Seahawk" );
 
-        // Set the ArrayAdapter as the ListView's adapter.
-        mainListView.setAdapter( listAdapter );
-        */
 
         // Finds the ListView resource.
         mListView = (ListView) findViewById(R.id.mainListView );
@@ -120,6 +116,13 @@ public class MessageListActivity extends SwipeListViewActivity {
     public void onItemClickListener(ListAdapter adapter, int position) {
         Toast.makeText(this, "Single tap on item position " + position,
                 Toast.LENGTH_SHORT).show();
+    }
+
+    public void onNew()
+    {
+
+        finish();  // Finishes second activity
+
     }
 
 }

@@ -15,27 +15,29 @@ import android.widget.TextView;
 public class HomeActivity extends Activity {
 
     //field variables
-    private TextView label;
-    private EditText msgField;
-    private EditText keyField;
-    private Button listBtn;
-    private Button newBtn;
-    private Button saveBtn;
-    private Button deleteBtn;
-    private Button nextBtn;
-    private Button previousBtn;
-    private Button encryptBtn;
-    private Button decryptBtn;
+    private TextView label; // Label to display the title
+    private EditText msgField; // Displays  the message field for the message being displayed
+    private EditText keyField; // Takes the encrypting key password
+    private Button listBtn; // List button which will take you to the list of messages activity
+    private Button newBtn; // New button to create a new message
+    private Button saveBtn; // Save button which will save the message
+    private Button deleteBtn; // Delete button to delete the message
+    private Button nextBtn; // Next Button which goes to the next message
+    private Button previousBtn; // Previous Button which goes back to previous message
+    private Button encryptBtn; // Encrypt button which encrypts the message
+    private Button decryptBtn; // Decrypt button which decrypts the message
 
     //static and package visibility to make it accessible from MessageListActivity
     static MessageList ml;
 
-    private static final String FIRST_MESSAGE = "This is your first message. Enter any key and press 'Encrypt' button.";
+    private static final String FIRST_MESSAGE = "This is your first message. Enter any key and press 'Encrypt' button."; // First default message to be displayed
+    public static Activity fa; // Activity object
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        fa = this;
 
         ml = new MessageList(getApplicationContext());
 
@@ -110,6 +112,7 @@ public class HomeActivity extends Activity {
         updateView(ml.getText());
     }
 
+    // Asks the message list  to switch to the next method and updates the information on screen.
     private void onNext() {
         onSave();
         if(!ml.checkNext()){
@@ -131,6 +134,7 @@ public class HomeActivity extends Activity {
 
     }
 
+    // Asks the message list  to switch to the previous method and updates the information on screen.
     private void onPrevious(){
         onSave();
         if(!ml.checkPrevious()){
@@ -151,24 +155,27 @@ public class HomeActivity extends Activity {
         updateView(ml.getText());
     }
 
+    // Saves the message
     private void onSave() {
        ml.save(msgField.getText().toString());
     }
 
+    // onList opens the activity
     private void onList() {
         onSave();
         Intent i = new Intent(getBaseContext(), MessageListActivity.class);
         startActivity(i);
     }
 
+    // Encrypts the message
     private void onEncrypt() {
 
        onSave();
-        ml.encrypt(keyField.getText().toString());
+       ml.encrypt(keyField.getText().toString());
        updateView(ml.getText());
        onSave();
     }
-
+    // Decrypts the message
     private void onDecrypt() {
         onSave();
         ml.decrypt(keyField.getText().toString());
@@ -177,12 +184,13 @@ public class HomeActivity extends Activity {
     }
 
     //create a new empty message
-    private void onNew(){
+    void onNew(){
         onSave();
         ml.newMessage();
         updateView(ml.getText());
     }
 
+    // Deletes the message you would like to delete
     private void onDelete(){
         AlertDialog dlg = new AlertDialog.Builder(this).create();
         dlg.setTitle("Delete");
@@ -196,11 +204,13 @@ public class HomeActivity extends Activity {
         dlg.show(); // Does not wait for dialog!
     }
 
+    // Updates the view
     private void updateView(String s){
         msgField.setText(s);
         updateLabel();
     }
 
+    // Updates the label
     private void updateLabel(){
         label.setText(ml.getLabel());
     }
@@ -225,4 +235,6 @@ public class HomeActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
