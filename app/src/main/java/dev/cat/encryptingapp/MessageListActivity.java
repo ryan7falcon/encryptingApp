@@ -31,7 +31,7 @@ public class MessageListActivity extends SwipeListViewActivity {
     private ListView mListView; // A view that shows items in a vertically scrolling list.
     private ArrayAdapter<String> mAdapter; // A concrete BaseAdapter(An Adapter object acts as a bridge
     // between an AdapterView and the underlying data for that view.) that is backed by an array of arbitrary objects.
-    MessageList ml = HomeActivity.ml;
+    MessageList ml = HomeActivity._ml;
     private static final int CHAR_LIMIT = 28; // Character limit for text displayed in one row
     private Button newBtn; // A button for creating new messages
 

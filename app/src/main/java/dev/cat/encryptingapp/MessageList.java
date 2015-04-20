@@ -19,8 +19,8 @@ import java.util.Date;
  */
 public class MessageList {
 
-    protected Context context; // Interface to global information about an application environment.
-    private ArrayList<Message> _list; // a list of messages
+    protected Context _context; // Interface to global information about an application environment
+    private ArrayList<Message> _list; // a list of messages (database)
     private static final String FNAME = "message"; //prefix for filenames
     private static final String LIST_FILE_NAME = "list.txt"; //file for storing filenames
 
@@ -28,9 +28,10 @@ public class MessageList {
     private static final int START_ASCII = 32;
 
     // ASCII keycode for '~' which is the end of the range
-    private static final int FIMISH_ASCII = 126;
+    private static final int FINISH_ASCII = 126;
 
-    private Message cm; // current message
+    // current message
+    private Message _cm;
 
     /**
      * constructor which sets and creates a new ArrayList of messages and sets the application context
@@ -38,7 +39,7 @@ public class MessageList {
      */
     public MessageList(Context context){
         _list = new ArrayList<>();
-        this.context = context;
+        _context = context;
     }
 
     /**
@@ -50,7 +51,7 @@ public class MessageList {
         m.setPath(FNAME + (date.getTime())); //unique name for a message file based on current time
         m.setText("");
         _list.add(m); // adds the message to the array list
-        cm = m; //
+        _cm = m; //
         //add filename to the list.txt of files
         updateList();
     }
@@ -64,7 +65,7 @@ public class MessageList {
 
         OutputStreamWriter writer; // Data written to the target input stream is converted into bytes by either a default or a provided character converter.
         try {
-            writer = new OutputStreamWriter(context.openFileOutput(LIST_FILE_NAME, Context.MODE_PRIVATE)); // Open a private file associated with this Context's application package for writing.
+            writer = new OutputStreamWriter(_context.openFileOutput(LIST_FILE_NAME, Context.MODE_PRIVATE)); // Open a private file associated with this Context's application package for writing.
 
             // Goes through the array list and writes to the file
             for (int i = 0; i < _list.size(); i++){
@@ -83,7 +84,7 @@ public class MessageList {
      * @param s text that will be stored in a message
      */
     public void setText(String s){
-        cm.setText(s);
+        _cm.setText(s);
     }
 
     /**
@@ -91,7 +92,7 @@ public class MessageList {
      * @return the String containing current message
      */
     public String getText(){
-        return cm.getText();
+        return _cm.getText();
     }
 
     /**
@@ -100,14 +101,14 @@ public class MessageList {
      */
     public void save(String s){
         //updates array list.txt
-        cm.setText(s);
+        _cm.setText(s);
 
         //write message into the file
-        String string = cm.getText();
+        String string = _cm.getText();
         OutputStreamWriter outputStream;
 
         try {
-            outputStream = new OutputStreamWriter(context.openFileOutput(cm.getPath(), Context.MODE_PRIVATE));
+            outputStream = new OutputStreamWriter(_context.openFileOutput(_cm.getPath(), Context.MODE_PRIVATE));
             outputStream.write(string);
             outputStream.close();
 
@@ -126,7 +127,7 @@ public class MessageList {
         String ret;
         //read file names from list.txt
         try {
-            InputStream inputStream =  context.openFileInput(LIST_FILE_NAME);
+            InputStream inputStream =  _context.openFileInput(LIST_FILE_NAME);
 
             if ( inputStream != null ) {
                 //  Data reads from the source input stream is changed into characters by either given character converter.
@@ -157,7 +158,7 @@ public class MessageList {
                     Message m = new Message("", field);
                     //read message from a file
                     try {
-                        inputStream = context.openFileInput(m.getPath());
+                        inputStream = _context.openFileInput(m.getPath());
                         if (inputStream != null) {
 
                             inputStreamReader = new InputStreamReader(inputStream);
@@ -196,7 +197,7 @@ public class MessageList {
         //if smth loaded return true
         if (_list.size() > 0){
             //load the first message
-            cm = _list.get(0);
+            _cm = _list.get(0);
             return true;
         }
 
@@ -208,32 +209,30 @@ public class MessageList {
      * Deletes current message
      */
     public void delete(){
-        int index = _list.indexOf(cm);
+        int index = _list.indexOf(_cm);
         _list.remove(index); // removes the index from the array list
         if (_list.size() == 0) {
             newMessage();
-            cm.setText("This is your first message. Enter any key and press 'Encrypt' button.");
+            _cm.setText("This is your first message. Enter any key and press 'Encrypt' button.");
         }
         else {
             if (_list.size() < index + 1)
                 index--;
         }
-        cm = _list.get(index);
+        _cm = _list.get(index);
         updateList();
     }
 
     /**
      * Getter for the label
       */
-
     public String getLabel(){
-        return "Message " + (_list.indexOf(cm) + 1) + "/" + _list.size();
+        return "Message " + (_list.indexOf(_cm) + 1) + "/" + _list.size();
     }
 
     /**
      * Getter for the ArrayList to get the list of messages
      */
-
     public ArrayList<String> getListOfMessages(){
 
         ArrayList<String> l = new ArrayList<>();
@@ -248,7 +247,7 @@ public class MessageList {
      * check if next message exists
      */
     public boolean checkNext(){
-        int index = _list.indexOf(cm);
+        int index = _list.indexOf(_cm);
         return (index + 1 < _list.size());
     }
 
@@ -257,8 +256,7 @@ public class MessageList {
      */
     public void goToNext()
     {
-        goTo(_list.indexOf(cm) + 1);
-
+        goTo(_list.indexOf(_cm) + 1);
     }
 
 
@@ -276,14 +274,14 @@ public class MessageList {
      */
     public boolean checkPrevious(){
 
-        int index = _list.indexOf(cm);
+        int index = _list.indexOf(_cm);
         return (index - 1 >= 0);
     }
     /**
      * switch to previous message
      */
     public void goToPrevious(){
-        goTo(_list.indexOf(cm) - 1);
+        goTo(_list.indexOf(_cm) - 1);
     }
 
     /**
@@ -299,7 +297,7 @@ public class MessageList {
      */
     public void goTo(int num)
     {
-        cm = _list.get(num);
+        _cm = _list.get(num);
     }
     //-----------------------------------------------------------------------------------------------
 
@@ -316,7 +314,7 @@ public class MessageList {
      */
     public void encrypt( String key){
         //get a string from a message
-        String s = cm.getText();
+        String s = _cm.getText();
         String result = "";
 
         //go through all chars in a string
@@ -324,7 +322,7 @@ public class MessageList {
             char c = s.charAt(i);
 
             // If the character is in the desired ASCII range, encrypt
-            if ((c >= START_ASCII && c <=FIMISH_ASCII )){
+            if ((c >= START_ASCII && c <= FINISH_ASCII)){
                 //get key's char position
                 int remainder = (i + 1) % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
@@ -333,9 +331,9 @@ public class MessageList {
                 int keyChar = key.charAt(index) - START_ASCII;
 
                 //encrypt
-                int sum = c -START_ASCII + keyChar;
+                int sum = c - START_ASCII + keyChar;
                 //if result is out of bounds, loop through the range
-                char e = (char) (sum % (FIMISH_ASCII + 1 -START_ASCII) + START_ASCII);
+                char e = (char) (sum % (FINISH_ASCII + 1 -START_ASCII) + START_ASCII);
 
                 // add encrypted char to resulting string
                 result+=e;
@@ -344,7 +342,7 @@ public class MessageList {
             else
                 result+=c;
         }
-        cm.setText(result);
+        _cm.setText(result);
     }
 
     /**
@@ -352,7 +350,7 @@ public class MessageList {
      * @param key - Decryption key
      */
     public void decrypt( String key){
-        String s = cm.getText(); //the string from the message
+        String s = _cm.getText(); //the string from the message
         String result = "";
 
         //go through each position in the string
@@ -361,7 +359,7 @@ public class MessageList {
             char c = s.charAt(i);
 
             // If the character is in the desired ASCII range, decrypt
-            if ((c >= START_ASCII && c <= FIMISH_ASCII)){
+            if ((c >= START_ASCII && c <= FINISH_ASCII)){
                //get key's char position
                 int remainder = (i + 1) % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
@@ -372,7 +370,7 @@ public class MessageList {
                 //decrypt
                 int sum = c - START_ASCII - keyChar;
                 //if result is out of bounds, loop through the range
-                char e = (char)( (sum >= 0) ? sum + START_ASCII: sum + FIMISH_ASCII + 1);
+                char e = (char)( (sum >= 0) ? sum + START_ASCII: sum + FINISH_ASCII + 1);
 
                 // add decrypted char to resulting string
                 result+=e;
@@ -381,7 +379,7 @@ public class MessageList {
             else
                 result+=c;
         }
-        cm.setText(result);
+        _cm.setText(result);
     }
 
 }

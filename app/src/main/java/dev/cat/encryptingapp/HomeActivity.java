@@ -29,20 +29,12 @@ import android.widget.TextView;
 public class HomeActivity extends Activity {
 
     //field variables
-    private TextView label; // Label to display the title
-    private EditText msgField; // Displays  the message field for the message being displayed
-    private EditText keyField; // Takes the encrypting key password
-    private Button listBtn; // List button which will take you to the list of messages activity
-    private Button newBtn; // New button to create a new message
-    private Button saveBtn; // Save button which will save the message
-    private Button deleteBtn; // Delete button to delete the message
-    private Button nextBtn; // Next Button which goes to the next message
-    private Button previousBtn; // Previous Button which goes back to previous message
-    private Button encryptBtn; // Encrypt button which encrypts the message
-    private Button decryptBtn; // Decrypt button which decrypts the message
+    private TextView _label; // Label to display the title
+    private EditText _msgField; // Displays  the message field for the message being displayed
+    private EditText _keyField; // Takes the encrypting key password
 
     //static and package visibility to make it accessible from MessageListActivity
-    static MessageList ml;
+    static MessageList _ml;
 
     // First default message to be displayed
     private static final String FIRST_MESSAGE = "This is your first message. Enter any key and press 'Encrypt' button.";
@@ -52,11 +44,20 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        ml = new MessageList(getApplicationContext());
+        _ml = new MessageList(getApplicationContext());
 
-        label = (TextView) findViewById(R.id.msgLabel);
-        msgField = (EditText) findViewById(R.id.msgField);
-        keyField = (EditText) findViewById(R.id.keyField);
+        Button listBtn; // List button which will take you to the list of messages activity
+        Button newBtn; // New button to create a new message
+        Button saveBtn; // Save button which will save the message
+        Button deleteBtn; // Delete button to delete the message
+        Button nextBtn; // Next Button which goes to the next message
+        Button previousBtn; // Previous Button which goes back to previous message
+        Button encryptBtn; // Encrypt button which encrypts the message
+        Button decryptBtn; // Decrypt button which decrypts the message
+
+        _label = (TextView) findViewById(R.id.msgLabel);
+        _msgField = (EditText) findViewById(R.id.msgField);
+        _keyField = (EditText) findViewById(R.id.keyField);
         listBtn = (Button) findViewById(R.id.listBtn);
         newBtn  = (Button) findViewById(R.id.newBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
@@ -119,9 +120,9 @@ public class HomeActivity extends Activity {
         });
 
         //create first message if nothing is loaded from text files
-        if(!ml.load()){
-            ml.newMessage();
-            ml.setText(FIRST_MESSAGE);
+        if(!_ml.load()){
+            _ml.newMessage();
+            _ml.setText(FIRST_MESSAGE);
         }
         updateView();
     }
@@ -131,20 +132,20 @@ public class HomeActivity extends Activity {
      */
     private void onNext() {
         onSave();
-        if(!ml.checkNext()){
+        if(!_ml.checkNext()){
             AlertDialog dlg = new AlertDialog.Builder(this).create();
             dlg.setTitle("End of a list");
             dlg.setMessage("This is a last message in the list. Go to the first one?");
             dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which){
-                            ml.goToFirst();  updateView();}
+                            _ml.goToFirst();  updateView();}
                     }
             );
             dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
             dlg.show(); // Does not wait for dialog!
         }
         else{
-            ml.goToNext();
+            _ml.goToNext();
         }
         updateView();
 
@@ -175,20 +176,20 @@ public class HomeActivity extends Activity {
      */
     private void onPrevious(){
         onSave();
-        if(!ml.checkPrevious()){
+        if(!_ml.checkPrevious()){
             AlertDialog dlg = new AlertDialog.Builder(this).create();
             dlg.setTitle("End of a list");
             dlg.setMessage("This is a first message in the list. Go to the last one?");
             dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which){
-                           ml.goToLast();  updateView();}
+                           _ml.goToLast();  updateView();}
                     }
             );
             dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
             dlg.show(); // Does not wait for dialog!
         }
         else{
-            ml.goToPrevious();
+            _ml.goToPrevious();
         }
         updateView();
     }
@@ -197,7 +198,7 @@ public class HomeActivity extends Activity {
      * Saves the message
      */
     private void onSave() {
-       ml.save(msgField.getText().toString());
+       _ml.save(_msgField.getText().toString());
     }
 
     /**
@@ -217,7 +218,7 @@ public class HomeActivity extends Activity {
     private void onEncrypt() {
 
        onSave();
-       ml.encrypt(keyField.getText().toString());
+       _ml.encrypt(_keyField.getText().toString());
        updateView();
        onSave();
     }
@@ -228,7 +229,7 @@ public class HomeActivity extends Activity {
      */
     private void onDecrypt() {
         onSave();
-        ml.decrypt(keyField.getText().toString());
+        _ml.decrypt(_keyField.getText().toString());
         updateView();
         onSave();
     }
@@ -239,7 +240,7 @@ public class HomeActivity extends Activity {
      */
     void onNew(){
         onSave();
-        ml.newMessage();
+        _ml.newMessage();
         updateView();
     }
 
@@ -253,7 +254,7 @@ public class HomeActivity extends Activity {
         dlg.setMessage("Are you sure you want to delete this message?");
         dlg.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener(){
                     public void onClick(DialogInterface dialog, int which){
-                        ml.delete();  updateView();}
+                        _ml.delete();  updateView();}
                 }
         );
         dlg.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancel", (DialogInterface.OnClickListener)null);
@@ -264,7 +265,7 @@ public class HomeActivity extends Activity {
      * Updates the view - the text of the current message and the label - message's number
      */
     private void updateView(){
-        msgField.setText(ml.getText());
+        _msgField.setText(_ml.getText());
         updateLabel();
     }
 
@@ -273,7 +274,7 @@ public class HomeActivity extends Activity {
       */
 
     private void updateLabel(){
-        label.setText(ml.getLabel());
+        _label.setText(_ml.getLabel());
     }
 
     @Override
