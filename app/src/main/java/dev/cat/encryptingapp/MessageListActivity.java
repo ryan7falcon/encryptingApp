@@ -14,6 +14,15 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+/**
+ * Class: MessageListActivity
+ * Author: Nathan an Ryan
+ *
+ * This activity allows user to browse all messages, select any message for editing,
+ * delete it or create a new one.
+ * To delete a message user can swipe left or right, to create a new one - press the button "New",
+ * to select a message - just tap on it.
+ */
 
 public class MessageListActivity extends SwipeListViewActivity {
 
@@ -23,36 +32,34 @@ public class MessageListActivity extends SwipeListViewActivity {
     private ArrayAdapter<String> mAdapter; // A concrete BaseAdapter(An Adapter object acts as a bridge
     // between an AdapterView and the underlying data for that view.) that is backed by an array of arbitrary objects.
     MessageList ml = HomeActivity.ml;
-    private static final int CHAR_LIMIT = 28; // Character limit is 28
-    private Button newBtn; // used to create new messages
+    private static final int CHAR_LIMIT = 28; // Character limit for text displayed in one row
+    private Button newBtn; // A button for creating new messages
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_message);
 
+        //configuring a button
         newBtn  = (Button) findViewById(R.id.newBtn);
-
         newBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 onNew();
             }
         });
 
-
         // Finds the ListView resource.
         mListView = (ListView) findViewById(R.id.mainListView );
 
         updateView();
-
     }
 
-
+    //Updates the list of messages on the screen
     private void updateView(){
         ArrayList<String> listOfText = ml.getListOfMessages(); //the list of all messages' texts
         ArrayList<String> trimmedList = new ArrayList<>(); //reformatted list
-        //ArrayList<String> listOfNames = ml.getLIstOfNames(); //for debugging
 
         for (int i = 0; i < listOfText.size(); i++){
 
@@ -104,34 +111,62 @@ public class MessageListActivity extends SwipeListViewActivity {
         return mListView;
     }
 
+    //called on swipe
     @Override
     public void getSwipeItem(boolean isRight, int position) {
+        //show information about deleted message in a bubble (toast) at the bottom of the screen
         Toast.makeText(this,
                 "Message " + (position + 1)  + " was deleted",
                 Toast.LENGTH_SHORT).show();
+        //selecting the message
         ml.goTo(position);
+        //deleting the message
         ml.delete();
+
+        //updating the list on the screen
         updateView();
     }
 
+    //called on tap
     @Override
     public void onItemClickListener(ListAdapter adapter, int position) {
+        //showing information about chosen message in a bubble (toast) at the bottom of the screen
         Toast.makeText(this, "Message " + (position + 1) + " was chosen",
                 Toast.LENGTH_SHORT).show();
+
+        //switching to chosen message
         ml.goTo(position);
-        Intent i = new Intent(ACTION_UPDATE_VIEW);
+
+        //Sending an Intent to HomeActivity to update the screen
+        Intent i = new Intent(ACTION_UPDATE_VIEW); //custom Intent message
+
+        //setting the receiver
         i.setClass(getBaseContext(), HomeActivity.class);
+
+        //broadcasting the Intent locally (other apps cant receive it)
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+
+        // Finishing this activity
         finish();
     }
 
+    //called when New button is pressed
     public void onNew()
     {
+        //creating a new message in a MessageList
         ml.newMessage();
-        Intent i = new Intent(ACTION_UPDATE_VIEW);
+
+        //Sending an Intent to HomeActivity to update the screen
+        Intent i = new Intent(ACTION_UPDATE_VIEW); //custom Intent message
+
+        //setting the receiver
         i.setClass(getBaseContext(), HomeActivity.class);
+
+        //broadcasting the Intent locally (other apps cant receive it)
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
-        finish();  // Finishes this activity
+
+        // Finishing this activity
+        finish();
     }
 
 }

@@ -1,3 +1,6 @@
+/**
+ * Source: https://andhradroid.wordpress.com/2012/07/05/how-to-implement-swipe-delete-operation-in-android-like-iphone/
+ */
 package dev.cat.encryptingapp;
 
 import android.app.Activity;

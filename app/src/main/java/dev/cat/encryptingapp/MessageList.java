@@ -12,7 +12,10 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 /**
- * Created by Ryan on 4/17/2015.
+ * Class: MessageList
+ * Author: Ryan
+ *
+ * This is a database for all messages that user creates
  */
 public class MessageList {
 
@@ -20,14 +23,14 @@ public class MessageList {
     private ArrayList<Message> _list; // a list of messages
     private static final String FNAME = "message"; //prefix for filenames
     private static final String LIST_FILE_NAME = "list.txt"; //file for storing filenames
-    private static final int START_ASCII = 32; // ASCII keycode starting with space
-    private static final int FIMISH_ASCII = 126; // ASCII keycode ending with ~ which will be tne range for keyboard characters, numbers, and letters.
+
+    // ASCII keycode for space, it is a start of the ASCII table's range used for encryption
+    private static final int START_ASCII = 32;
+
+    // ASCII keycode for '~' which is the end of the range
+    private static final int FIMISH_ASCII = 126;
+
     private Message cm; // current message
-
-
-
-
-
 
     /**
      * constructor which sets and creates a new ArrayList of messages and sets the application context
@@ -84,7 +87,7 @@ public class MessageList {
     }
 
     /**
-     *
+     * Getter for the text of current message
      * @return the String containing current message
      */
     public String getText(){
@@ -126,13 +129,20 @@ public class MessageList {
             InputStream inputStream =  context.openFileInput(LIST_FILE_NAME);
 
             if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream); //  Data reads from the source input stream is changed into characters by either given character converter. The default encoding is taken from the "file.encoding" system property. InputStreamReader contains a buffer of bytes read from the source stream and converts these into characters as needed. The buffer size is 8K.
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader); // Wraps an existing Reader and buffers the input.
-                StringBuilder stringBuilder = new StringBuilder(); // Being able to change a combination of characters for use in creating strings.
+                //  Data reads from the source input stream is changed into characters by either given character converter.
+                // The default encoding is taken from the "file.encoding" system property.
+                // InputStreamReader contains a buffer of bytes read from the source stream and
+                // converts these into characters as needed. The buffer size is 8K.
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                // Wraps an existing Reader and buffers the input.
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                // Being able to change a combination of characters for use in creating strings.
+                StringBuilder stringBuilder = new StringBuilder();
                 String receiveString;
 
 
-                //  while the receivingString references the bufferedReader's line which it is reading is not equal to null, add the read line to the receiveString
+                //  while the receivingString references the bufferedReader's line which it is reading
+                // is not equal to null, add the read line to the receiveString
                 while ( (receiveString = bufferedReader.readLine()) != null ) {
                     stringBuilder.append(receiveString);
                 }
@@ -150,9 +160,9 @@ public class MessageList {
                         inputStream = context.openFileInput(m.getPath());
                         if (inputStream != null) {
 
-                            inputStreamReader = new InputStreamReader(inputStream); // Creates new InputStreamReader object and passes the inputStream
-                            bufferedReader = new BufferedReader(inputStreamReader); // Creates new BufferedReader object and passes the inputStreamReader
-                            stringBuilder = new StringBuilder(); // Creates new InputStreamReader object and passes the inputStream
+                            inputStreamReader = new InputStreamReader(inputStream);
+                            bufferedReader = new BufferedReader(inputStreamReader);
+                            stringBuilder = new StringBuilder();
 
                             while ((receiveString = bufferedReader.readLine()) != null) {
                                 stringBuilder.append(receiveString);
@@ -194,7 +204,9 @@ public class MessageList {
             return false;
     }
 
-    // Deletes the message
+    /**
+     * Deletes current message
+     */
     public void delete(){
         int index = _list.indexOf(cm);
         _list.remove(index); // removes the index from the array list
@@ -210,12 +222,18 @@ public class MessageList {
         updateList();
     }
 
-    // Getter for label
+    /**
+     * Getter for the label
+      */
+
     public String getLabel(){
         return "Message " + (_list.indexOf(cm) + 1) + "/" + _list.size();
     }
 
-    // Getter for ArrayList to get list OF messages
+    /**
+     * Getter for the ArrayList to get the list of messages
+     */
+
     public ArrayList<String> getListOfMessages(){
 
         ArrayList<String> l = new ArrayList<>();
@@ -225,15 +243,6 @@ public class MessageList {
         return l;
     }
 
-    // Getter for ArrayList to get list of names
-    public ArrayList<String> getLIstOfNames(){
-
-        ArrayList<String> l = new ArrayList<>();
-        for (Message msg : _list) {
-            l.add(msg.getPath());
-        }
-        return l;
-    }
 //----------------------Navigation between messages---------------------------------------
     /**
      * check if next message exists
@@ -284,7 +293,10 @@ public class MessageList {
         goTo(_list.size() - 1);
     }
 
-
+    /**
+     * go to a specified message
+     * @param num message's index
+     */
     public void goTo(int num)
     {
         cm = _list.get(num);
@@ -292,41 +304,80 @@ public class MessageList {
     //-----------------------------------------------------------------------------------------------
 
     //--------------------------Encryption-Decryption---------------------------------------------
+
+    //Cesar's code with a muti-character key
+    //Every char in a string is shifted by a number(char) at a corresponding position in a key
+    //If a key is shorter than a string, it is looped as many times as needed.
+    //The number is an ASCII code of a char.
+
+    /**
+     * Encrypts the message
+     * @param key - encryption key
+     */
     public void encrypt( String key){
+        //get a string from a message
         String s = cm.getText();
         String result = "";
-        for (int i = 1; i <= s.length(); i++){
-            char c = s.charAt(i - 1);
-            if ((c >= START_ASCII && c <=FIMISH_ASCII )){ // If the Start ASCII key codes for keyboard characters is between the two ranges perform the sequences
-                int remainder = i % key.length(); // The remainder left over from i and the key's length
+
+        //go through all chars in a string
+        for (int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+
+            // If the character is in the desired ASCII range, encrypt
+            if ((c >= START_ASCII && c <=FIMISH_ASCII )){
+                //get key's char position
+                int remainder = (i + 1) % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
-                int keyChar = key.charAt(index) - START_ASCII; // The keys Character index is going to be whichever character at index minus the starting ASCII code
-                int sum = c -START_ASCII + keyChar; // Total is going to be key Character index plus the key's character index
-                int sumNorm = sum % (FIMISH_ASCII + 1 -START_ASCII);
-                char e = (char)(sumNorm + START_ASCII);
-                result+=e; // total result of calculation
+
+                //get key's char for encryption
+                int keyChar = key.charAt(index) - START_ASCII;
+
+                //encrypt
+                int sum = c -START_ASCII + keyChar;
+                //if result is out of bounds, loop through the range
+                char e = (char) (sum % (FIMISH_ASCII + 1 -START_ASCII) + START_ASCII);
+
+                // add encrypted char to resulting string
+                result+=e;
             }
+            //otherwise leave it as it is
             else
                 result+=c;
         }
         cm.setText(result);
     }
 
-    // Decrypt method which will decrypt the message by first
+    /**
+     * Decrypts the message
+     * @param key - Decryption key
+     */
     public void decrypt( String key){
-        String s = cm.getText();
+        String s = cm.getText(); //the string from the message
         String result = "";
-        for (int i = 1; i <= s.length(); i++){
-            char c = s.charAt(i - 1);// Whichever the text's character is at minus 1 to not go out of bounds
-            if ((c >= START_ASCII && c <=FIMISH_ASCII)){ // If the Start ASCII key codes for keyboard characters is between the two ranges perform the sequences
-                int remainder = i % key.length(); // The remainder left over from i and the key's length
+
+        //go through each position in the string
+        for (int i = 0; i < s.length(); i++){
+
+            char c = s.charAt(i);
+
+            // If the character is in the desired ASCII range, decrypt
+            if ((c >= START_ASCII && c <= FIMISH_ASCII)){
+               //get key's char position
+                int remainder = (i + 1) % key.length();
                 int index = (remainder == 0) ? key.length() - 1 : remainder - 1;
+
+                //get key's char for decryption
                 int keyChar = key.charAt(index) - START_ASCII;
-                int sum = c -START_ASCII - keyChar; //  sum of the Key's Character index subtracted from the start of the ASCII key code
-                int sumResult = (sum >= 0) ? sum + START_ASCII: sum + FIMISH_ASCII + 1; // The total sum if it is greater than 0 add sum plus start ASCII key code and if not add sum plus FINISH ASCII key code instead + 1 to reach last letter.
-                char e = (char)(sumResult); // cast convert the sumresult to a char
-                result+=e; // store total result
+
+                //decrypt
+                int sum = c - START_ASCII - keyChar;
+                //if result is out of bounds, loop through the range
+                char e = (char)( (sum >= 0) ? sum + START_ASCII: sum + FIMISH_ASCII + 1);
+
+                // add decrypted char to resulting string
+                result+=e;
             }
+            //otherwise leave it as it is
             else
                 result+=c;
         }
