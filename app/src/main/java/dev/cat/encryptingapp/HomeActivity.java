@@ -2,9 +2,13 @@ package dev.cat.encryptingapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +30,8 @@ public class HomeActivity extends Activity {
     private Button previousBtn; // Previous Button which goes back to previous message
     private Button encryptBtn; // Encrypt button which encrypts the message
     private Button decryptBtn; // Decrypt button which decrypts the message
+
+
 
     //static and package visibility to make it accessible from MessageListActivity
     static MessageList ml;
@@ -53,7 +59,8 @@ public class HomeActivity extends Activity {
         encryptBtn = (Button) findViewById(R.id.encryptBtn);
         decryptBtn = (Button) findViewById(R.id.decryptBtn);
 
-
+        //broadcast receiver for Intents
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, new IntentFilter("dev.cat.action.UPDATEVIEW"));
 
 
         newBtn.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +139,21 @@ public class HomeActivity extends Activity {
         }
         updateView(ml.getText());
 
+    }
+
+    //hamdler for received intents, called when "dev.cat.action.UPDATEVIEW" intent is broadcasted
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateView(ml.getText());
+        }
+    };
+
+    @Override
+    protected void onDestroy(){
+        //unregister receiver because the activity is about to be closed
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        super.onDestroy();
     }
 
     // Asks the message list  to switch to the previous method and updates the information on screen.
