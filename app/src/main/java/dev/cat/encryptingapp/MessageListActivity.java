@@ -66,7 +66,7 @@ public class MessageListActivity extends SwipeListViewActivity {
             String text = listOfText.get(i);
 
             //remove all newline characters
-            text = text.replace("\n", "").replace("\r", "");
+            text = text.replace("\n", " ").replace("\r", " ");
 
             //trim the string if its too long
             if (listOfText.get(i).length() > CHAR_LIMIT) {

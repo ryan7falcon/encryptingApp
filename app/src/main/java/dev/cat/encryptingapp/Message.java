@@ -7,7 +7,6 @@ public class Message {
 
     private String _text;
     private String _path;
-    private boolean _encrypted;
 
     public Message(String text, String path){
         _text = text;
@@ -17,7 +16,6 @@ public class Message {
     public Message(){
         _text = "";
         _path = "";
-        _encrypted = false;
     }
 
     public String getText() {
