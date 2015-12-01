@@ -24,8 +24,6 @@ import android.widget.TextView;
  * and open a MessageListActivity to view all messages as a list
  */
 
-
-
 public class HomeActivity extends Activity {
 
     //field variables
@@ -46,6 +44,7 @@ public class HomeActivity extends Activity {
 
         _ml = new MessageList(getApplicationContext());
 
+        //buttons
         Button listBtn; // List button which will take you to the list of messages activity
         Button newBtn; // New button to create a new message
         Button saveBtn; // Save button which will save the message
